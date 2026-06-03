@@ -1,0 +1,387 @@
+{% extends "base.html" %}
+{% block contenido %}
+
+<style>
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #1a3a6e 60%, #1a56db 100%);
+    padding: 80px 24px 100px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1400&q=60') center/cover;
+    opacity: .12;
+  }
+
+  .hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 60px);
+    font-weight: 800;
+    color: white;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 span {
+    color: var(--orange);
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: rgba(255,255,255,.75);
+    max-width: 480px;
+    margin-bottom: 40px;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* ── SEARCH BOX ── */
+  .search-box {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: var(--shadow-lg);
+    margin-top: -50px;
+    position: relative;
+    z-index: 10;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .search-box h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .search-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 14px;
+    align-items: end;
+  }
+
+  @media (max-width: 768px) {
+    .search-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    .search-grid { grid-template-columns: 1fr; }
+  }
+
+  .search-field label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 8px;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    max-width: 1200px;
+    margin: 60px auto;
+    padding: 0 24px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .section-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -.5px;
+  }
+
+  .section-sub {
+    font-size: 14px;
+    color: var(--gray-400);
+    margin-top: 4px;
+  }
+
+  /* ── DESTINATION CARDS ── */
+  .dest-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .dest-card {
+    border-radius: var(--radius);
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    aspect-ratio: 4/3;
+    text-decoration: none;
+    display: block;
+    box-shadow: var(--shadow);
+    transition: transform .3s, box-shadow .3s;
+  }
+
+  .dest-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .dest-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .4s;
+  }
+
+  .dest-card:hover .dest-img { transform: scale(1.06); }
+
+  .dest-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,.75) 0%, rgba(0,0,0,.1) 60%);
+  }
+
+  .dest-info {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 20px;
+    color: white;
+  }
+
+  .dest-code {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    opacity: .7;
+    margin-bottom: 4px;
+  }
+
+  .dest-city {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -.5px;
+  }
+
+  .dest-country {
+    font-size: 13px;
+    opacity: .75;
+    margin-top: 2px;
+  }
+
+  /* ── WHY SECTION ── */
+  .features {
+    background: var(--navy);
+    padding: 60px 24px;
+    margin-top: 60px;
+  }
+
+  .features-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .features-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 32px;
+  }
+
+  .feature {
+    text-align: center;
+    color: rgba(255,255,255,.8);
+  }
+
+  .feature-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .feature-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 6px;
+  }
+
+  .feature-desc {
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(255,255,255,.55);
+  }
+</style>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-label">✈ Reserva tu próximo vuelo</div>
+    <h1>Vuela a donde<br>quieras ir <span>hoy</span></h1>
+    <p class="hero-sub">Encuentra vuelos al mejor precio, reserva en minutos y viaja con total comodidad.</p>
+    {% if not session.id_usuario %}
+    <div class="hero-cta">
+      <a href="/login" class="btn btn-orange btn-lg">Comenzar ahora</a>
+      <a href="#destinos" class="btn btn-lg" style="background:rgba(255,255,255,.12); color:white; border:1px solid rgba(255,255,255,.25)">
+        Ver destinos
+      </a>
+    </div>
+    {% else %}
+    <div class="hero-cta">
+      <a href="/buscar" class="btn btn-orange btn-lg">Buscar vuelos</a>
+      <a href="/mis-viajes" class="btn btn-lg" style="background:rgba(255,255,255,.12); color:white; border:1px solid rgba(255,255,255,.25)">
+        Mis viajes
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- SEARCH BOX -->
+<div style="padding: 0 24px; margin-top: -50px; position:relative; z-index:10">
+  <div class="search-box" style="max-width:1152px; margin:0 auto">
+    <h3>🔍 Busca tu vuelo</h3>
+    {% if session.id_usuario %}
+    <form action="/buscar" method="POST">
+      <div class="search-grid">
+        <div class="search-field">
+          <label>📍 Origen</label>
+          <select name="origen" class="form-control" required>
+            <option value="">¿Desde dónde?</option>
+            {% for d in destinos %}
+            <option value="{{ d.ciudad }}">{{ d.ciudad }}, {{ d.pais }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="search-field">
+          <label>🎯 Destino</label>
+          <select name="destino" class="form-control" required>
+            <option value="">¿A dónde vas?</option>
+            {% for d in destinos %}
+            <option value="{{ d.ciudad }}">{{ d.ciudad }}, {{ d.pais }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="search-field">
+          <label>📅 Fecha</label>
+          <input type="date" name="fecha" class="form-control" required
+                 min="{{ '' }}">
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" style="white-space:nowrap">
+          Buscar →
+        </button>
+      </div>
+    </form>
+    {% else %}
+    <div style="text-align:center; padding: 20px 0 8px; color: var(--gray-600)">
+      <a href="/login" class="btn btn-primary">Inicia sesión para buscar vuelos →</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- DESTINOS -->
+<div class="section" id="destinos">
+  <div class="section-header">
+    <div>
+      <div class="section-title">Destinos populares</div>
+      <div class="section-sub">Descubre los lugares más solicitados</div>
+    </div>
+  </div>
+  <div class="dest-grid">
+    {% for d in destinos %}
+    <a href="{% if session.id_usuario %}/buscar{% else %}/login{% endif %}" class="dest-card">
+      <img class="dest-img"
+           src="{{ d.imagen_url }}"
+           alt="{{ d.ciudad }}"
+           onerror="this.src='https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600'">
+      <div class="dest-overlay"></div>
+      <div class="dest-info">
+        <div class="dest-code">{{ d.codigo_iata }}</div>
+        <div class="dest-city">{{ d.ciudad }}</div>
+        <div class="dest-country">{{ d.pais }}</div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="features">
+  <div class="features-inner">
+    <div class="features-title">¿Por qué volar con AeroSystem?</div>
+    <div class="features-grid">
+      <div class="feature">
+        <span class="feature-icon">⚡</span>
+        <div class="feature-title">Reserva en minutos</div>
+        <p class="feature-desc">Proceso simple de 4 pasos para tener tu boleto listo al instante.</p>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🔒</span>
+        <div class="feature-title">Pagos seguros</div>
+        <p class="feature-desc">Tu información y transacciones siempre protegidas.</p>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🔄</span>
+        <div class="feature-title">Cancelación flexible</div>
+        <p class="feature-desc">Cancela hasta 2 días antes y recibe tu reembolso automáticamente.</p>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🎟</span>
+        <div class="feature-title">Boleto digital</div>
+        <p class="feature-desc">Accede a tus boletos desde cualquier dispositivo en cualquier momento.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block contenido %}
+
+<!-- WIZARD BAR -->
+<div class="wizard-bar">
+  <div class="wizard-inner">
+    <div class="wizard-step active">
+      <div class="wizard-num">1</div>
+      <span class="wizard-label">Ruta y fecha</span>
+    </div>
+    <div class="wizard-step">
+      <div class="wizard-num">2</div>
+      <span class="wizard-label">Elige vuelo</span>
+    </div>
+    <div class="wizard-step">
+      <div class="wizard-num">3</div>
+      <span class="wizard-label">Clase</span>
+    </div>
+    <div class="wizard-step">
+      <div class="wizard-num">4</div>
+      <span class="wizard-label">Pago</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .buscar-wrap {
+    max-width: 640px;
+    margin: 48px auto;
+    padding: 0 24px;
+  }
+
+  .buscar-header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .buscar-header h2 {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -.5px;
+    margin-bottom: 8px;
+  }
+
+  .buscar-header p {
+    color: var(--gray-400);
+    font-size: 15px;
+  }
+
+  .route-visual {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .route-visual .form-group { flex: 1; margin-bottom: 0; }
+
+  .route-swap {
+    width: 40px; height: 40px;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 22px;
+    transition: all .2s;
+  }
+
+  .route-swap:hover {
+    background: var(--sky);
+    border-color: var(--blue-light);
+  }
+
+  .buscar-card {
+    background: white;
+    border-radius: 20px;
+    padding: 36px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--gray-200);
+  }
+</style>
+
+<div class="buscar-wrap">
+  <div class="buscar-header">
+    <h2>¿A dónde quieres volar?</h2>
+    <p>Selecciona tu ruta y la fecha de salida</p>
+  </div>
+
+  <div class="buscar-card">
+    <form method="POST" action="/buscar">
+
+      <div class="route-visual">
+        <div class="form-group">
+          <label class="form-label">📍 Origen</label>
+          <select name="origen" class="form-control" required id="sel-origen">
+            <option value="">¿Desde dónde?</option>
+            {% for c in ciudades %}
+            <option value="{{ c }}">{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <button type="button" class="route-swap" onclick="swapCities()" title="Intercambiar">⇄</button>
+
+        <div class="form-group">
+          <label class="form-label">🎯 Destino</label>
+          <select name="destino" class="form-control" required id="sel-destino">
+            <option value="">¿A dónde?</option>
+            {% for c in ciudades %}
+            <option value="{{ c }}">{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:28px">
+        <label class="form-label">📅 Fecha de salida</label>
+        <input type="date" name="fecha" class="form-control" required
+               id="fecha-input">
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full btn-lg">
+        Ver vuelos disponibles →
+      </button>
+
+    </form>
+  </div>
+</div>
+
+<script>
+  // Fecha mínima = hoy
+  document.getElementById('fecha-input').min = new Date().toISOString().split('T')[0];
+
+  function swapCities() {
+    const o = document.getElementById('sel-origen');
+    const d = document.getElementById('sel-destino');
+    const tmp = o.value;
+    o.value = d.value;
+    d.value = tmp;
+  }
+</script>
+
+{% endblock %}

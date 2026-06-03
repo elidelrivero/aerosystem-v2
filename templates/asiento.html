@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+{% block contenido %}
+
+<div class="wizard-bar">
+  <div class="wizard-inner">
+    <div class="wizard-step done"><div class="wizard-num">✓</div><span class="wizard-label">Ruta y fecha</span></div>
+    <div class="wizard-step done"><div class="wizard-num">✓</div><span class="wizard-label">Elige vuelo</span></div>
+    <div class="wizard-step active"><div class="wizard-num">3</div><span class="wizard-label">Clase</span></div>
+    <div class="wizard-step"><div class="wizard-num">4</div><span class="wizard-label">Pago</span></div>
+  </div>
+</div>
+
+<style>
+  .asiento-wrap { max-width: 720px; margin: 40px auto; padding: 0 24px 80px; }
+
+  .flight-summary {
+    background: var(--navy);
+    border-radius: 16px;
+    padding: 24px 28px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .fs-route {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .fs-arrow { color: var(--orange); }
+
+  .fs-meta {
+    font-size: 13px;
+    color: rgba(255,255,255,.6);
+    margin-top: 4px;
+  }
+
+  .fs-times {
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .fs-time {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .fs-dur {
+    font-size: 12px;
+    color: rgba(255,255,255,.5);
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    letter-spacing: -.3px;
+  }
+
+  .clase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .clase-card {
+    border: 2px solid var(--gray-200);
+    border-radius: 16px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all .2s;
+    text-decoration: none;
+    display: block;
+    background: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .clase-card:hover {
+    border-color: var(--blue-light);
+    box-shadow: 0 4px 20px rgba(26,86,219,.12);
+    transform: translateY(-3px);
+  }
+
+  .clase-card.disabled {
+    opacity: .5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .clase-card.economica { --accent: #3b82f6; }
+  .clase-card.business  { --accent: #8b5cf6; }
+  .clase-card.primera   { --accent: #f59e0b; }
+
+  .clase-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent, var(--blue));
+  }
+
+  .clase-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .clase-nombre {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .clase-precio {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--accent, var(--blue));
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .clase-currency {
+    font-size: 12px;
+    color: var(--gray-400);
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+
+  .clase-features {
+    list-style: none;
+    font-size: 12px;
+    color: var(--gray-600);
+    line-height: 1.8;
+  }
+
+  .clase-features li::before { content: '✓ '; color: var(--green); font-weight: 700; }
+
+  .clase-seats {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--gray-100);
+    font-size: 12px;
+    color: var(--gray-400);
+    font-weight: 600;
+  }
+
+  .clase-seats .dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    margin-right: 4px;
+  }
+</style>
+
+<div class="asiento-wrap">
+
+  <!-- Resumen del vuelo -->
+  <div class="flight-summary">
+    <div>
+      <div class="fs-route">
+        {{ vuelo.origen }} <span class="fs-arrow">→</span> {{ vuelo.destino }}
+      </div>
+      <div class="fs-meta">{{ vuelo.fecha_salida }} &nbsp;·&nbsp; {{ vuelo.aerolinea }}</div>
+    </div>
+    <div class="fs-times">
+      <div class="fs-time">{{ vuelo.hora_salida | fmt_time }} → {{ vuelo.hora_llegada | fmt_time }}</div>
+      <div class="fs-dur">
+        {% if vuelo.duracion_min %}
+          {{ vuelo.duracion_min // 60 }}h {{ vuelo.duracion_min % 60 }}m
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Elige tu clase de asiento</div>
+
+  <div class="clase-grid">
+    {% for c in clases %}
+    <a href="/pagar/{{ vuelo.id_vuelo }}/{{ c.id_tipo_asiento }}"
+       class="clase-card
+         {% if c.descripcion == 'Economica' %}economica
+         {% elif c.descripcion == 'Business' %}business
+         {% else %}primera{% endif %}
+         {% if c.asientos_disponibles == 0 %}disabled{% endif %}">
+
+      <span class="clase-icon">
+        {% if c.descripcion == 'Economica' %}💺
+        {% elif c.descripcion == 'Business' %}🛋️
+        {% else %}⭐{% endif %}
+      </span>
+
+      <div class="clase-nombre">{{ c.descripcion }}</div>
+      <div class="clase-precio">${{ "{:,.0f}".format(c.precio_final) }}</div>
+      <div class="clase-currency">MXN por persona</div>
+
+      <ul class="clase-features">
+        {% if c.descripcion == 'Economica' %}
+          <li>Equipaje de mano</li>
+          <li>Asiento estándar</li>
+          <li>Snack incluido</li>
+        {% elif c.descripcion == 'Business' %}
+          <li>Equipaje documentado</li>
+          <li>Asiento premium</li>
+          <li>Comida incluida</li>
+          <li>Check-in prioritario</li>
+        {% else %}
+          <li>Equipaje sin límite</li>
+          <li>Suite privada</li>
+          <li>Menú gourmet</li>
+          <li>Acceso a sala VIP</li>
+          <li>Transfer al aeropuerto</li>
+        {% endif %}
+      </ul>
+
+      <div class="clase-seats">
+        {% if c.asientos_disponibles > 0 %}
+          <span class="dot" style="background:var(--green)"></span>
+          {{ c.asientos_disponibles }} disponibles
+        {% else %}
+          <span class="dot" style="background:var(--red)"></span>
+          Agotado
+        {% endif %}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+  <div style="margin-top:24px">
+    <a href="javascript:history.back()" class="btn btn-ghost btn-sm">← Volver a vuelos</a>
+  </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+{% block contenido %}
+
+<style>
+  .trips-wrap { max-width: 900px; margin: 40px auto; padding: 0 24px 80px; }
+
+  .trips-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .trips-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -.5px;
+  }
+
+  .trips-sub { font-size: 14px; color: var(--gray-400); margin-top: 4px; }
+
+  /* Boleto card */
+  .boleto-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow .2s;
+  }
+
+  .boleto-card:hover { box-shadow: var(--shadow); }
+
+  .boleto-top {
+    background: var(--navy);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: white;
+    flex-wrap: wrap;
+  }
+
+  .boleto-code {
+    font-family: monospace;
+    font-size: 13px;
+    background: rgba(255,255,255,.12);
+    padding: 4px 12px;
+    border-radius: 6px;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,.9);
+  }
+
+  .boleto-route {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -.3px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .boleto-route .arr { color: var(--orange); }
+
+  .boleto-price {
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .boleto-price .amount {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--orange);
+  }
+
+  .boleto-price .cur {
+    font-size: 11px;
+    color: rgba(255,255,255,.5);
+    font-weight: 600;
+  }
+
+  .boleto-body {
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .boleto-detail {
+    font-size: 13px;
+    color: var(--gray-600);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .boleto-detail strong { color: var(--gray-800); }
+
+  .boleto-actions { margin-left: auto; display: flex; gap: 10px; }
+
+  /* Pendientes */
+  .pendiente-card {
+    background: #fffbeb;
+    border: 1.5px solid #fde68a;
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .pendiente-info .route {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .pendiente-info .meta {
+    font-size: 13px;
+    color: var(--gray-400);
+    margin-top: 4px;
+  }
+
+  .pendiente-exp {
+    font-size: 12px;
+    color: #d97706;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 24px;
+    background: white;
+    border-radius: 16px;
+    border: 1px solid var(--gray-200);
+  }
+
+  .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+  .empty-state h3 { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .empty-state p  { color: var(--gray-400); font-size: 14px; margin-bottom: 24px; }
+
+  .section-sep {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 32px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-sep::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gray-200);
+  }
+</style>
+
+<div class="trips-wrap">
+  <div class="trips-header">
+    <div>
+      <div class="trips-title">Mis viajes</div>
+      <div class="trips-sub">Hola, {{ session.nombre }} — aquí están tus reservaciones y boletos</div>
+    </div>
+    <a href="/buscar" class="btn btn-primary">+ Nuevo vuelo</a>
+  </div>
+
+  <!-- RESERVACIONES PENDIENTES -->
+  {% if pendientes %}
+  <div class="section-sep">⏳ Pendientes de pago</div>
+  {% for p in pendientes %}
+  <div class="pendiente-card">
+    <div class="pendiente-info">
+      <div class="route">{{ p.origen }} → {{ p.destino }}</div>
+      <div class="meta">{{ p.fecha_salida }} · {{ p.clase }}</div>
+    </div>
+    <div class="pendiente-exp">
+      ⚠ Expira: {{ p.fecha_expiracion }}
+    </div>
+    <div style="margin-left:auto; display:flex; gap:10px">
+      <a href="/cancelar/{{ p.id_reservacion }}" class="btn btn-ghost btn-sm">Cancelar</a>
+    </div>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <!-- BOLETOS CONFIRMADOS -->
+  <div class="section-sep">🎟 Boletos confirmados</div>
+
+  {% if boletos %}
+    {% for b in boletos %}
+    <div class="boleto-card">
+      <div class="boleto-top">
+        <span class="boleto-code">{{ b.codigo_boleto }}</span>
+        <div class="boleto-route">
+          {{ b.origen }} <span class="arr">→</span> {{ b.destino }}
+        </div>
+        <div class="boleto-price">
+          <div class="amount">${{ "{:,.2f}".format(b.costo_final) }}</div>
+          <div class="cur">MXN</div>
+        </div>
+      </div>
+
+      <div class="boleto-body">
+        <div class="boleto-detail">📅 <strong>{{ b.fecha_salida }}</strong></div>
+        <div class="boleto-detail">🕐 {{ b.hora_salida | fmt_time }}</div>
+        <div class="boleto-detail">
+          {% if b.clase == 'Primera Clase' %}
+            <span class="badge badge-gold">⭐ {{ b.clase }}</span>
+          {% elif b.clase == 'Business' %}
+            <span class="badge badge-blue">🛋️ {{ b.clase }}</span>
+          {% else %}
+            <span class="badge badge-gray">💺 {{ b.clase }}</span>
+          {% endif %}
+        </div>
+        {% if b.estado == 'cancelada' %}
+          <span class="badge badge-red">Cancelado</span>
+        {% else %}
+          <span class="badge badge-green">✓ Confirmado</span>
+        {% endif %}
+
+        <div class="boleto-actions">
+          {% if b.estado != 'cancelada' %}
+            <a href="/cancelar/{{ b.id_reservacion }}" class="btn btn-danger btn-sm">
+              Cancelar
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+  {% else %}
+    <div class="empty-state">
+      <div class="icon">✈</div>
+      <h3>Aún no tienes boletos</h3>
+      <p>Busca un vuelo y realiza tu primera reservación.</p>
+      <a href="/buscar" class="btn btn-primary">Buscar vuelos</a>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

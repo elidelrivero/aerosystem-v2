@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AeroSystem — Vuelos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:      #0a1628;
+      --navy-mid:  #122040;
+      --blue:      #1a56db;
+      --blue-light:#3b82f6;
+      --sky:       #e8f0fe;
+      --orange:    #f97316;
+      --orange-dk: #ea6c0a;
+      --green:     #16a34a;
+      --red:       #dc2626;
+      --gray-50:   #f9fafb;
+      --gray-100:  #f3f4f6;
+      --gray-200:  #e5e7eb;
+      --gray-400:  #9ca3af;
+      --gray-600:  #4b5563;
+      --gray-800:  #1f2937;
+      --white:     #ffffff;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+      --shadow:    0 4px 16px rgba(0,0,0,.1);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,.15);
+      --radius:    12px;
+      --font:      'Plus Jakarta Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--gray-50);
+      color: var(--gray-800);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      background: var(--navy);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      box-shadow: 0 2px 20px rgba(0,0,0,.3);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: white;
+    }
+
+    .nav-logo-icon {
+      width: 36px; height: 36px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .nav-logo-text {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-logo-text span { color: var(--orange); }
+
+    .nav-links {
+      display: flex;
+      gap: 4px;
+      margin-left: 8px;
+    }
+
+    .nav-link {
+      color: rgba(255,255,255,.65);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: all .2s;
+    }
+
+    .nav-link:hover {
+      color: white;
+      background: rgba(255,255,255,.08);
+    }
+
+    .nav-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .nav-avatar {
+      width: 34px; height: 34px;
+      background: var(--blue);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      color: white;
+    }
+
+    .btn-nav {
+      background: var(--orange);
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s;
+    }
+
+    .btn-nav:hover { background: var(--orange-dk); }
+
+    .btn-nav-outline {
+      background: transparent;
+      color: rgba(255,255,255,.8);
+      border: 1px solid rgba(255,255,255,.2);
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all .2s;
+    }
+
+    .btn-nav-outline:hover {
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.35);
+      color: white;
+    }
+
+    /* ── ALERTS ── */
+    .alerts-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 24px 0;
+    }
+
+    .alert {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 10px;
+      border: 1px solid;
+    }
+
+    .alert-success { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .alert-danger  { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
+    .alert-info    { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+    .alert-warning { background: #fffbeb; border-color: #fde68a; color: #d97706; }
+
+    .alert-close {
+      margin-left: auto;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: inherit;
+      opacity: .6;
+      font-size: 16px;
+      line-height: 1;
+    }
+    .alert-close:hover { opacity: 1; }
+
+    /* ── MAIN ── */
+    main { flex: 1; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: var(--radius);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      transition: all .2s;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: white;
+    }
+    .btn-primary:hover { background: #1648c4; box-shadow: 0 4px 16px rgba(26,86,219,.35); }
+
+    .btn-orange {
+      background: var(--orange);
+      color: white;
+    }
+    .btn-orange:hover { background: var(--orange-dk); box-shadow: 0 4px 16px rgba(249,115,22,.35); }
+
+    .btn-outline {
+      background: white;
+      color: var(--blue);
+      border: 1.5px solid var(--blue);
+    }
+    .btn-outline:hover { background: var(--sky); }
+
+    .btn-ghost {
+      background: var(--gray-100);
+      color: var(--gray-600);
+      border: 1px solid var(--gray-200);
+    }
+    .btn-ghost:hover { background: var(--gray-200); }
+
+    .btn-danger {
+      background: white;
+      color: var(--red);
+      border: 1.5px solid var(--red);
+    }
+    .btn-danger:hover { background: #fef2f2; }
+
+    .btn-full { width: 100%; justify-content: center; }
+    .btn-lg { padding: 14px 32px; font-size: 15px; }
+    .btn-sm { padding: 8px 16px; font-size: 13px; }
+
+    /* ── FORMS ── */
+    .form-group { margin-bottom: 18px; }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-600);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 10px;
+      font-family: var(--font);
+      font-size: 14px;
+      color: var(--gray-800);
+      background: white;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      -webkit-appearance: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--blue-light);
+      box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+    }
+
+    select.form-control { cursor: pointer; }
+
+    /* ── CARDS ── */
+    .card {
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-blue   { background: #dbeafe; color: #1d4ed8; }
+    .badge-green  { background: #dcfce7; color: #15803d; }
+    .badge-orange { background: #ffedd5; color: #c2410c; }
+    .badge-red    { background: #fee2e2; color: #b91c1c; }
+    .badge-gray   { background: var(--gray-100); color: var(--gray-600); }
+    .badge-gold   { background: #fef9c3; color: #854d0e; }
+
+    /* ── WIZARD PROGRESS ── */
+    .wizard-bar {
+      background: white;
+      border-bottom: 1px solid var(--gray-200);
+      padding: 16px 24px;
+    }
+
+    .wizard-inner {
+      max-width: 700px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .wizard-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      position: relative;
+    }
+
+    .wizard-step:not(:last-child)::after {
+      content: '';
+      flex: 1;
+      height: 2px;
+      background: var(--gray-200);
+      margin: 0 8px;
+    }
+
+    .wizard-step.done:not(:last-child)::after { background: var(--blue); }
+
+    .wizard-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--gray-100);
+      color: var(--gray-400);
+      border: 2px solid var(--gray-200);
+      flex-shrink: 0;
+    }
+
+    .wizard-step.active .wizard-num {
+      background: var(--blue);
+      color: white;
+      border-color: var(--blue);
+    }
+
+    .wizard-step.done .wizard-num {
+      background: var(--blue);
+      color: white;
+      border-color: var(--blue);
+    }
+
+    .wizard-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-400);
+      white-space: nowrap;
+    }
+
+    .wizard-step.active .wizard-label { color: var(--blue); }
+    .wizard-step.done  .wizard-label  { color: var(--gray-600); }
+
+    /* ── PAGE CONTAINER ── */
+    .page-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .page-narrow {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,.4);
+      text-align: center;
+      padding: 24px;
+      font-size: 13px;
+    }
+
+    footer span { color: rgba(255,255,255,.7); font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <div class="nav-logo-icon">✈</div>
+      <div class="nav-logo-text">Aero<span>System</span></div>
+    </a>
+
+    {% if session.id_usuario %}
+    <div class="nav-links">
+      <a href="/buscar"    class="nav-link">Buscar vuelos</a>
+      <a href="/mis-viajes" class="nav-link">Mis viajes</a>
+    </div>
+    {% endif %}
+
+    <div class="nav-right">
+      {% if session.id_usuario %}
+        <div class="nav-user">
+          <div class="nav-avatar">{{ session.nombre[0]|upper }}</div>
+          <span>{{ session.nombre.split()[0] }}</span>
+        </div>
+        <a href="/logout" class="btn-nav-outline">Salir</a>
+      {% else %}
+        <a href="/login" class="btn-nav">Iniciar sesión</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="alerts-wrap">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            {{ message }}
+            <button class="alert-close" onclick="this.parentElement.remove()">✕</button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  {% block contenido %}{% endblock %}
+</main>
+
+<footer>
+  © 2024 <span>AeroSystem</span> — Proyecto Universitario · Todos los derechos reservados
+</footer>
+
+</body>
+</html>

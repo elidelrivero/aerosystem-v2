@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+{% block contenido %}
+
+<div class="wizard-bar">
+  <div class="wizard-inner">
+    <div class="wizard-step done"><div class="wizard-num">✓</div><span class="wizard-label">Ruta y fecha</span></div>
+    <div class="wizard-step done"><div class="wizard-num">✓</div><span class="wizard-label">Elige vuelo</span></div>
+    <div class="wizard-step done"><div class="wizard-num">✓</div><span class="wizard-label">Clase</span></div>
+    <div class="wizard-step active"><div class="wizard-num">4</div><span class="wizard-label">Pago</span></div>
+  </div>
+</div>
+
+<style>
+  .pagar-wrap {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 24px 80px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 28px;
+    align-items: start;
+  }
+
+  @media (max-width: 768px) {
+    .pagar-wrap { grid-template-columns: 1fr; }
+  }
+
+  .summary-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+  }
+
+  .summary-header {
+    background: var(--navy);
+    padding: 24px 28px;
+    color: white;
+  }
+
+  .summary-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,.6);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 12px;
+  }
+
+  .summary-route {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .summary-route .arrow { color: var(--orange); }
+
+  .summary-body { padding: 24px 28px; }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 14px;
+  }
+
+  .info-row:last-child { border-bottom: none; }
+
+  .info-label { color: var(--gray-400); font-weight: 500; }
+  .info-value { font-weight: 600; color: var(--gray-800); }
+
+  .price-row {
+    background: var(--sky);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  .price-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .price-total {
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--blue);
+    letter-spacing: -1px;
+  }
+
+  .price-mxn {
+    font-size: 13px;
+    color: var(--gray-400);
+    font-weight: 600;
+  }
+
+  /* Payment panel */
+  .pay-panel {
+    position: sticky;
+    top: 80px;
+  }
+
+  .pay-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid var(--gray-200);
+    padding: 28px;
+  }
+
+  .pay-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .pay-sub {
+    font-size: 13px;
+    color: var(--gray-400);
+    margin-bottom: 24px;
+  }
+
+  .card-icons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .card-icon {
+    padding: 6px 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--gray-600);
+    font-weight: 600;
+    background: var(--gray-50);
+  }
+
+  .secure-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--green);
+    font-weight: 600;
+    margin-top: 16px;
+    justify-content: center;
+  }
+
+  .total-preview {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+
+  .total-preview .lbl { color: var(--gray-600); font-weight: 600; }
+  .total-preview .val { font-size: 20px; font-weight: 800; color: var(--blue); letter-spacing: -.5px; }
+</style>
+
+<div class="pagar-wrap">
+
+  <!-- Resumen izquierda -->
+  <div class="summary-card">
+    <div class="summary-header">
+      <div class="summary-title">Resumen de tu vuelo</div>
+      <div class="summary-route">
+        {{ vuelo.origen }} <span class="arrow">→</span> {{ vuelo.destino }}
+      </div>
+    </div>
+
+    <div class="summary-body">
+      <div class="info-row">
+        <span class="info-label">Pasajero</span>
+        <span class="info-value">{{ session.nombre }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Aerolínea</span>
+        <span class="info-value">{{ vuelo.aerolinea }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Fecha de vuelo</span>
+        <span class="info-value">{{ vuelo.fecha_salida }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Horario</span>
+        <span class="info-value">{{ vuelo.hora_salida | fmt_time }} → {{ vuelo.hora_llegada | fmt_time }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Clase</span>
+        <span class="info-value">
+          {% if vuelo.clase == 'Primera Clase' %}
+            <span class="badge badge-gold">⭐ {{ vuelo.clase }}</span>
+          {% elif vuelo.clase == 'Business' %}
+            <span class="badge badge-blue">🛋️ {{ vuelo.clase }}</span>
+          {% else %}
+            <span class="badge badge-gray">💺 {{ vuelo.clase }}</span>
+          {% endif %}
+        </span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Vuelo</span>
+        <span class="info-value">
+          {% if vuelo.vuelo_internacional %}
+            <span class="badge badge-blue">🌎 Internacional</span>
+          {% else %}
+            <span class="badge badge-green">🇲🇽 Nacional</span>
+          {% endif %}
+        </span>
+      </div>
+
+      <div class="price-row">
+        <div class="price-label">Total a pagar</div>
+        <div>
+          <div class="price-total">${{ "{:,.2f}".format(vuelo.precio_final) }}</div>
+          <div class="price-mxn">MXN · IVA incluido</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel de pago derecha -->
+  <div class="pay-panel">
+    <div class="pay-card">
+      <div class="pay-title">Datos de pago</div>
+      <p class="pay-sub">Pago único con tarjeta de crédito o débito</p>
+
+      <div class="card-icons">
+        <span class="card-icon">VISA</span>
+        <span class="card-icon">MC</span>
+        <span class="card-icon">AMEX</span>
+      </div>
+
+      <form method="POST">
+        <div class="form-group">
+          <label class="form-label">Número de tarjeta</label>
+          <input class="form-control" placeholder="1234 5678 9012 3456"
+                 maxlength="19"
+                 oninput="this.value=this.value.replace(/[^0-9]/g,'').replace(/(.{4})/g,'$1 ').trim()">
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+          <div class="form-group">
+            <label class="form-label">Vencimiento</label>
+            <input class="form-control" placeholder="MM/AA" maxlength="5"
+                   oninput="this.value=this.value.replace(/[^0-9]/g,'').replace(/^(.{2})/,'$1/')">
+          </div>
+          <div class="form-group">
+            <label class="form-label">CVV</label>
+            <input class="form-control" placeholder="123" maxlength="4"
+                   oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:20px">
+          <label class="form-label">Nombre en la tarjeta</label>
+          <input class="form-control" placeholder="{{ session.nombre }}"
+                 value="{{ session.nombre }}">
+        </div>
+
+        <div class="total-preview">
+          <span class="lbl">Total</span>
+          <span class="val">${{ "{:,.2f}".format(vuelo.precio_final) }}</span>
+        </div>
+
+        <button type="submit" class="btn btn-orange btn-full btn-lg">
+          Confirmar pago →
+        </button>
+      </form>
+
+      <div class="secure-badge">🔒 Pago 100% seguro y encriptado</div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

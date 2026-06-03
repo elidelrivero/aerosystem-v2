@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% block contenido %}
+
+<!-- WIZARD BAR -->
+<div class="wizard-bar">
+  <div class="wizard-inner">
+    <div class="wizard-step done">
+      <div class="wizard-num">✓</div>
+      <span class="wizard-label">Ruta y fecha</span>
+    </div>
+    <div class="wizard-step active">
+      <div class="wizard-num">2</div>
+      <span class="wizard-label">Elige vuelo</span>
+    </div>
+    <div class="wizard-step">
+      <div class="wizard-num">3</div>
+      <span class="wizard-label">Clase</span>
+    </div>
+    <div class="wizard-step">
+      <div class="wizard-num">4</div>
+      <span class="wizard-label">Pago</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .vuelos-wrap {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 24px 80px;
+  }
+
+  .vuelos-header {
+    margin-bottom: 28px;
+  }
+
+  .vuelos-route {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -.5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .vuelos-route .arrow {
+    color: var(--blue);
+    font-size: 20px;
+  }
+
+  .vuelos-meta {
+    font-size: 14px;
+    color: var(--gray-400);
+    margin-top: 6px;
+  }
+
+  .vuelos-meta span {
+    color: var(--gray-600);
+    font-weight: 600;
+  }
+
+  .vuelo-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 14px;
+    cursor: pointer;
+    transition: all .2s;
+    text-decoration: none;
+    display: block;
+  }
+
+  .vuelo-card:hover {
+    border-color: var(--blue-light);
+    box-shadow: 0 4px 20px rgba(26,86,219,.1);
+    transform: translateY(-2px);
+  }
+
+  .vuelo-top {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 16px;
+  }
+
+  .vuelo-aerolinea {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+
+  .vuelo-times {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+  }
+
+  .time-block { text-align: center; }
+
+  .time-hour {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -1px;
+  }
+
+  .time-city {
+    font-size: 12px;
+    color: var(--gray-400);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  .time-line {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .time-line-bar {
+    width: 100%;
+    height: 2px;
+    background: var(--gray-200);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .time-line-bar::before,
+  .time-line-bar::after {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gray-400);
+    position: absolute;
+  }
+
+  .time-line-bar::before { left: 0; }
+  .time-line-bar::after  { right: 0; }
+
+  .time-plane { font-size: 16px; }
+
+  .time-dur {
+    font-size: 11px;
+    color: var(--gray-400);
+    font-weight: 600;
+  }
+
+  .vuelo-price {
+    text-align: right;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .price-from {
+    font-size: 11px;
+    color: var(--gray-400);
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .price-amount {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+
+  .price-currency {
+    font-size: 13px;
+    color: var(--gray-400);
+    font-weight: 500;
+  }
+
+  .vuelo-bottom {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-top: 1px solid var(--gray-100);
+    padding-top: 14px;
+  }
+
+  .no-vuelos {
+    text-align: center;
+    padding: 60px 24px;
+    background: white;
+    border-radius: 16px;
+    border: 1px solid var(--gray-200);
+  }
+
+  .no-vuelos .icon { font-size: 48px; margin-bottom: 16px; }
+  .no-vuelos h3 { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .no-vuelos p  { color: var(--gray-400); font-size: 14px; margin-bottom: 24px; }
+</style>
+
+<div class="vuelos-wrap">
+  <div class="vuelos-header">
+    <div class="vuelos-route">
+      {{ origen }} <span class="arrow">→</span> {{ destino }}
+    </div>
+    <div class="vuelos-meta">
+      📅 <span>{{ fecha }}</span> &nbsp;·&nbsp;
+      {% if vuelos %}
+        <span>{{ vuelos|length }}</span> vuelo(s) disponible(s)
+      {% else %}
+        Sin resultados
+      {% endif %}
+    </div>
+  </div>
+
+  {% if vuelos %}
+    {% for v in vuelos %}
+    <a href="/asiento/{{ v.id_vuelo }}" class="vuelo-card">
+      <div class="vuelo-top">
+        <div>
+          <div class="vuelo-aerolinea">{{ v.aerolinea }}</div>
+          <div style="font-size:12px; color:var(--gray-400); margin-top:4px">
+            Vuelo #{{ v.id_vuelo }}
+          </div>
+        </div>
+
+        <div class="vuelo-times">
+          <div class="time-block">
+            <div class="time-hour">{{ v.hora_salida | fmt_time }}</div>
+            <div class="time-city">{{ v.origen }}</div>
+          </div>
+
+          <div class="time-line">
+            <div class="time-line-bar"><span class="time-plane">✈</span></div>
+            <div class="time-dur">
+              {% if v.duracion_min %}
+                {{ v.duracion_min // 60 }}h {{ v.duracion_min % 60 }}m
+              {% else %}
+                Directo
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="time-block">
+            <div class="time-hour">{{ v.hora_llegada | fmt_time }}</div>
+            <div class="time-city">{{ v.destino }}</div>
+          </div>
+        </div>
+
+        <div class="vuelo-price">
+          <div class="price-from">Desde</div>
+          <div class="price-amount">${{ "{:,.0f}".format(v.precio_base) }}</div>
+          <div class="price-currency">MXN</div>
+        </div>
+      </div>
+
+      <div class="vuelo-bottom">
+        {% if v.vuelo_internacional %}
+          <span class="badge badge-blue">🌎 Internacional</span>
+        {% else %}
+          <span class="badge badge-green">🇲🇽 Nacional</span>
+        {% endif %}
+        <span class="badge badge-gray">{{ v.total_disponibles }} asientos disp.</span>
+        <span style="margin-left:auto; color:var(--blue); font-size:13px; font-weight:700">
+          Seleccionar →
+        </span>
+      </div>
+    </a>
+    {% endfor %}
+
+  {% else %}
+    <div class="no-vuelos">
+      <div class="icon">✈</div>
+      <h3>Sin vuelos disponibles</h3>
+      <p>No encontramos vuelos de <strong>{{ origen }}</strong> a <strong>{{ destino }}</strong> para esa fecha.</p>
+      <a href="/buscar" class="btn btn-primary">Buscar otra fecha</a>
+    </div>
+  {% endif %}
+
+  <div style="margin-top: 20px">
+    <a href="/buscar" class="btn btn-ghost btn-sm">← Cambiar búsqueda</a>
+  </div>
+</div>
+
+{% endblock %}

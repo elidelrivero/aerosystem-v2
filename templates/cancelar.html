@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block contenido %}
+
+<style>
+  .cancel-wrap {
+    max-width: 560px;
+    margin: 48px auto;
+    padding: 0 24px 80px;
+  }
+
+  .cancel-card {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .cancel-header {
+    background: #fef2f2;
+    border-bottom: 1px solid #fecaca;
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .cancel-icon {
+    width: 44px; height: 44px;
+    background: #fee2e2;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .cancel-header-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--red);
+    margin-bottom: 2px;
+  }
+
+  .cancel-header-sub {
+    font-size: 13px;
+    color: #991b1b;
+    opacity: .7;
+  }
+
+  .cancel-body { padding: 28px; }
+
+  .flight-info {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+  }
+
+  .flight-info .route {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -.3px;
+    margin-bottom: 10px;
+  }
+
+  .flight-info .route span { color: var(--blue); }
+
+  .flight-info .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--gray-600);
+  }
+
+  .flight-info .meta strong { color: var(--gray-800); }
+
+  .policy-box {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #92400e;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .policy-box .ico { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+
+  .cancel-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+  }
+</style>
+
+<div class="cancel-wrap">
+  <div class="cancel-card">
+    <div class="cancel-header">
+      <div class="cancel-icon">⚠️</div>
+      <div>
+        <div class="cancel-header-title">Cancelar reservación</div>
+        <div class="cancel-header-sub">Esta acción no se puede deshacer</div>
+      </div>
+    </div>
+
+    <div class="cancel-body">
+      <div class="flight-info">
+        <div class="route">
+          {{ reservacion.origen }} <span>→</span> {{ reservacion.destino }}
+        </div>
+        <div class="meta">
+          <span>📅 <strong>{{ reservacion.fecha_salida }}</strong></span>
+          <span>💺 <strong>{{ reservacion.clase }}</strong></span>
+          <span>📋 <strong>RES #{{ reservacion.id_reservacion }}</strong></span>
+        </div>
+      </div>
+
+      <div class="policy-box">
+        <span class="ico">ℹ️</span>
+        <div>
+          <strong>Política de cancelación:</strong> Solo se permiten cancelaciones con al menos 2 días de anticipación al vuelo. Si realizaste un pago, el reembolso se procesará automáticamente.
+        </div>
+      </div>
+
+      <form method="POST"
+            onsubmit="return confirm('¿Confirmas la cancelación de este vuelo?')">
+        <div class="form-group">
+          <label class="form-label">Motivo de cancelación</label>
+          <input name="motivo" class="form-control"
+                 placeholder="Ej. Cambio de planes, emergencia personal..."
+                 required>
+        </div>
+
+        <div class="cancel-actions">
+          <a href="/mis-viajes" class="btn btn-ghost" style="flex:1; justify-content:center">
+            Volver
+          </a>
+          <button type="submit" class="btn btn-danger" style="flex:1; justify-content:center">
+            Sí, cancelar vuelo
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
