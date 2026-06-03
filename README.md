@@ -138,4 +138,4 @@ vuelo >── piloto
 
 ## Autor
 
-Edgar — Estudiante de Ingeniería en Sistemas Computacionales
+Edgar Eli del Rivero — Estudiante de Ingeniería en Sistemas Computacionales
